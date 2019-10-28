@@ -1,11 +1,13 @@
-import base64
+####################
+##  Parte N°3.2   ##
+####################
+
 import hashlib
-from random import choice
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
+from Crypto.Util.Padding import unpad
 
 
-ASCII = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&/()=¿?¡!*~^{ }[]-_:;.,<>+\"'|°¬´¨"
+ASCII = ''.join([chr(i) for i in range(256)])
 
 def gen_key():
     for a in ASCII:
@@ -25,7 +27,7 @@ def open_file(path="files/2019_09_25_17_01_52_paul.heinsohn.puerta_trasera.enc")
 def save_file(path, decrypted):
     with open(path, 'wb') as f:
         f.write(decrypted)
-    print(f"Succesful completion: {path} has been created")
+    print(f"Successful completion: {path} has been created")
 
 class AESCipher:
 
@@ -38,23 +40,25 @@ class AESCipher:
         return unpad(cipher.decrypt(enc), AES.block_size)
 
 if __name__ == "__main__":
-    # data = open_file()
-    data = open_file("files/2019_09_25_17_02_54_alex.valls.puerta_trasera.enc")
+    data = open_file()
+    # data = open_file("files/2019_09_25_17_02_54_alex.valls.puerta_trasera.enc")
     key_generator = gen_key()
     id_generator = gen_id()
 
     while True:
         try:
             H = hashlib.sha256(next(key_generator).encode()).digest()
-            key = H[:16]
-            iv = H[16:]
-            aes = AESCipher(key, iv)
+            aes = AESCipher(H[:16], H[16:])
             decrypted = aes.decrypt(data)
         except ValueError:
             pass
         except StopIteration:
             break
         else:
-            id__ = next(id_generator)
-            # save_file(f"new/decrypted_paul.puerta_trasera_{id__}", decrypted)
-            save_file(f"new/decrypted_alex.puerta_trasera_{id__}", decrypted)
+            id_ = next(id_generator)
+            if id_ == 92:  # N°92 from 0 to 278
+                save_file(f"output/decrypted_paul.puerta_trasera.mp4", decrypted)
+                break
+            # if id_ == 21:  # N°21 from 0 to 279
+            #     save_file(f"output/decrypted_alex.puerta_trasera.mp4", decrypted)
+            #     break

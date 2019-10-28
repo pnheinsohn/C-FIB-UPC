@@ -1,3 +1,7 @@
+####################
+##  Parte N°3.1   ##
+####################
+
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 
@@ -11,7 +15,7 @@ def open_file(path="files/2019_09_25_17_01_52_paul.heinsohn", ext="enc"):
 def save_file(path, data):
     with open(path, "wb") as f:
         f.write(data)
-    print(f"Succesful completion: {path} has been created")
+    print(f"Successful completion: {path} has been created")
 
 class AESCipher:
 
@@ -34,5 +38,5 @@ if __name__ == "__main__":
     bin_msg = open_file(path="files/2019_09_25_17_02_54_alex.valls")
     decrypted = aes_crypt.decrypt(bin_msg)
     
-    # save_file("decrypted_paul.jpeg", decrypted)
-    save_file("decrypted_alex.jpeg", decrypted)
+    # save_file("output/decrypted_paul.jpeg", decrypted)
+    save_file("output/decrypted_alex.jpeg", decrypted)
