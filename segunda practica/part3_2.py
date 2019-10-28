@@ -1,6 +1,6 @@
-####################
-##  Parte N°3.2   ##
-####################
+###################
+##  Parte N°3.2  ##
+###################
 
 import hashlib
 from Crypto.Cipher import AES
