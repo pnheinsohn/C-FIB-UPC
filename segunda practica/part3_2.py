@@ -40,8 +40,8 @@ class AESCipher:
         return unpad(cipher.decrypt(enc), AES.block_size)
 
 if __name__ == "__main__":
-    data = open_file()
-    # data = open_file("files/2019_09_25_17_02_54_alex.valls.puerta_trasera.enc")
+    # data = open_file()
+    data = open_file("files/2019_09_25_17_02_54_alex.valls.puerta_trasera.enc")
     key_generator = gen_key()
     id_generator = gen_id()
 
@@ -56,9 +56,9 @@ if __name__ == "__main__":
             break
         else:
             id_ = next(id_generator)
-            if id_ == 92:  # N°92 from 0 to 278
-                save_file(f"output/decrypted_paul.puerta_trasera.mp4", decrypted)
-                break
-            # if id_ == 21:  # N°21 from 0 to 279
-            #     save_file(f"output/decrypted_alex.puerta_trasera.mp4", decrypted)
+            # if id_ == 92:  # N°92 from 0 to 278
+            #     save_file(f"output/decrypted_paul.puerta_trasera.mp4", decrypted)
             #     break
+            if id_ == 21:  # N°21 from 0 to 279
+                save_file(f"output/decrypted_alex.puerta_trasera.mp4", decrypted)
+                break
