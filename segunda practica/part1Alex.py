@@ -55,6 +55,9 @@ def GF_invers(a):
 		iA = log_table[a-1]
 		return exp_table[255-iA-1]
 
+
+#Los resultados de los tiempos estan en el documento GraficasParte2.pdf
+
 GF_tables()
 
 start = timeit.default_timer()
