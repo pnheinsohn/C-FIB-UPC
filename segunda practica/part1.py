@@ -5,7 +5,7 @@
 from time import time
 
 
-def GF_product_p(px, qx, mod=0x11d):
+def GF_product_p(px, qx, mod=0x11d):  ## 0x11b for AES
     res = 0
     while qx > 0:
         if qx % 2 != 0:
@@ -28,7 +28,7 @@ def GF_es_generador(a):
             return False
     return False
 
-def GF_tables(gen=2):
+def GF_tables(gen=3):
     # Exponential
     exp_res = 1
     exp_table = []
@@ -56,6 +56,7 @@ def GF_invers(polynom):
 
 if __name__ == "__main__":
     EXP_TABLE, LOG_TABLE = GF_tables()
+    
     while True:
         a = int(input("Ingrese número: "))
         t1 = time()
