@@ -7,13 +7,13 @@ class rsa_key:
 
     def __init__(self, bits_modulo=2048, e=2**16+1):
         '''
-        genera una clau RSA (de 2048 bits i amb exponent public 2**16+1 per defecte)
+        genera una clau RSA (de 2048 bits i amb exponent public 2**16+1 per defecte)
         '''
         self.publicExponent = e
         self.primeP = number.getPrime(bits_modulo, randfunc=Random.get_random_bytes)
         self.primeQ = number.getPrime(bits_modulo, randfunc=Random.get_random_bytes)
         self.modulus = self.primeP * self.primeQ
-                
+
         self.privateExponent = number.inverse(self.publicExponent, (self.primeP - 1) * (self.primeQ - 1))
 
         self.inverseQModulusP = number.inverse(self.primeQ, self.primeP)
@@ -22,6 +22,7 @@ class rsa_key:
 
     def sign(self, message):
         '''
+        message: hasheado
         retorma un enter que és la signatura de "message" feta amb la clau RSA fent servir el TXR
         '''
         d_1 = self.privateExponent % (self.primeP - 1)
@@ -29,17 +30,17 @@ class rsa_key:
         p_1 = number.inverse(self.primeP, self.primeQ)
         q_1 = number.inverse(self.primeQ, self.primeP)
 
-        c_1 = pow(int.from_bytes(sha256(message.encode()).digest(), byteorder="big"), d_1, self.primeP)
-        c_2 = pow(int.from_bytes(sha256(message.encode()).digest(), byteorder="big"), d_2, self.primeQ)
+        c_1 = pow(message, d_1, self.primeP)
+        c_2 = pow(message, d_2, self.primeQ)
 
         return (c_1 * q_1 * self.primeQ + c_2 * p_1 * self.primeP) % self.modulus
 
     def sign_slow(self, message):
         '''
+        message: hasheado
         retorma un enter que és la signatura de "message" feta amb la clau RSA sense fer servir el TXR
         '''
-        h = int.from_bytes(sha256(message.encode()).digest(), byteorder='big')
-        return pow(h, self.privateExponent, self.modulus)
+        return pow(message, self.privateExponent, self.modulus)
 
     def print_key(self):
         print(f'''
@@ -64,8 +65,7 @@ class rsa_public_key:
         En qualsevol altre cas retorma el booleà False
         '''
         h = pow(signature, self.publicExponent, self.modulus)
-        h2 = int.from_bytes(sha256(message.encode()).digest(), byteorder="big")
-        return h == h2
+        return h == message
 
 
 if __name__ == "__main__":
