@@ -1,7 +1,7 @@
+from time import time
 from hashlib import sha256
 from Crypto import Random
 from Crypto.Util import number
-from time import time
 
 
 class rsa_key:
@@ -52,6 +52,7 @@ class rsa_key:
             Private exponent: {self.privateExponent}
         ''')
 
+
 class rsa_public_key:
 
     def __init__(self, rsa_key):
@@ -89,16 +90,3 @@ if __name__ == "__main__":
         fast: {time_signatures}
         slow: {time_slow_signatures}
         ''')
-
-    # public_rsa = rsa_public_key(RSA)
-
-'''
-Tabla de tiempos para firmar/signar
-
-bits modulo |   TXR     |   s/TXR   |
-------------------------------------|
-512         |
-1024        |
-2048        |
-4096        |
-'''

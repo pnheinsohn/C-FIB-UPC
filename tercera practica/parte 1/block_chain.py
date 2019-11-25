@@ -1,7 +1,9 @@
-import sys
-import random
 from time import time
-from rsa import *
+from random import randint
+from hashlib import sha256
+
+from rsa import rsa_key
+from transaction import transaction
 
 
 class block_chain:
@@ -49,13 +51,13 @@ class block:
         self.seed = None
 
     def _generate_block_hash_(self):
-        while True:
+        while True:  # For setting a correct seed
+            self.seed = randint(0, 2 ** 256)
             entrada = str(self.previous_block_hash)
             entrada += str(self.transaction.public_key.publicExponent)
             entrada += str(self.transaction.public_key.modulus)
             entrada += str(self.transaction.message)
             entrada += str(self.transaction.signature)
-            self.seed = random.randint(0, 2**256)
             entrada += str(self.seed)
             entrada = int(sha256(entrada.encode()).hexdigest(), 16)
             if entrada < 2 ** (256 - D):
@@ -98,57 +100,20 @@ class block:
         return first and second and third
 
     def __repr__(self):
-        return f'''
-    seed = {self.seed}
-
-    prevHash = {self.previous_block_hash}
-    hash = {self.block_hash}
-    limit = {2 ** 256-D}
-    transaccion = {self.transaction}
-        '''
-
-
-class transaction:
-
-    def __init__(self, message, RSAkey):
-        '''
-        message: hasheado
-        '''
-        self.message = message
-        self.signature = RSAkey.sign(message)
-        self.public_key = rsa_public_key(RSAkey)
-
-    def verify(self):
-        '''
-        retorna el boolea True si "signature" es correspon amb una
-        signatura de "message" feta amb la clau publica "public_key".
-        En qualsevol altre cas retorma el boolea False
-        '''
-        return self.public_key.verify(self.message, self.signature)
-
-    def __str__(self):
-        return f'''
-        Message: {self.message}
-        Signature: {self.signature}
-        '''
+        return f"seed = {self.seed}\nprevHash = {self.previous_block_hash}\nhash = {self.block_hash}\nlimit = {2 ** 256 - D}\ntransaccion = {self.transaction}"
 
 
 if __name__ == "__main__":
-    D = 14  # Para el exponente
+    D = 16  # Para el exponente
     RSA = rsa_key()
 
-    transactions = [transaction(int(sha256(f"hola {i}".encode()).hexdigest(), 16), RSA) for i in range(100)]
+    # Genera un iterable (solo puede ser iterado una única vez)
+    transactions = map(lambda i: transaction(int(sha256(f"hola {i}".encode()).hexdigest(), 16), RSA), range(100))
     
     now = time()
-    blockChain = block_chain(transactions[0])
-    [blockChain.add_block(transactions[i + 1]) for i in range(99)]
+    blockChain = block_chain(next(transactions))  # Obtenemos la primera transacción para generar el Block Chain
+    for _ in range(99):  # Toma entre 400 a 600 segundos
+        blockChain.add_block(next(transactions))  # Obtenemos las próximas transacciones y las agregamos a Block Chain
     
-    print(f'''Time elapsed: {time() - now}
-    Output: {blockChain.verify()}''')
-    
-    # while True:
-    #     try:
-        # except KeyboardInterrupt:
-        #     print(f"Last seed tried: {blockChain.block_id}")
-        #     sys.exit()
-
+    print(f'''Output: {blockChain.verify()}
+    Time elapsed: {time() - now}''')
