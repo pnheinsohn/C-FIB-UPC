@@ -19,5 +19,5 @@ class transaction:
         '''
         return self.public_key.verify(self.message, self.signature)
 
-    def __str__(self):
-        return f"(\nMessage: {self.message}\nSignature: {self.signature}\n)\n"
+    # def __str__(self):
+    #     return f"(\nMessage: {self.message}\nSignature: {self.signature}\n)\n"

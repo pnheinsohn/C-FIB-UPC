@@ -43,14 +43,14 @@ class rsa_key:
         '''
         return pow(message, self.privateExponent, self.modulus)
 
-    def print_key(self):
-        print(f'''
-            prime p: {self.primeP}
-            prime q: {self.primeQ}
-            modulus: {self.modulus}
-            Public exponent: {self.publicExponent}
-            Private exponent: {self.privateExponent}
-        ''')
+    # def print_key(self):
+    #     print(f'''
+    #         prime p: {self.primeP}
+    #         prime q: {self.primeQ}
+    #         modulus: {self.modulus}
+    #         Public exponent: {self.publicExponent}
+    #         Private exponent: {self.privateExponent}
+    #     ''')
 
 
 class rsa_public_key:
