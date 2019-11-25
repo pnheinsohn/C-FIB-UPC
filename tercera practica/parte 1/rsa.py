@@ -75,18 +75,28 @@ if __name__ == "__main__":
     bits_modulo = [512, 1024, 2048, 4096]
     messages = [int(sha256(f"hola {i}".encode()).hexdigest(), 16) for i in range(100)]
     
+    output_string = "Bits Modulo,Tiempo con TXR,Tiempo sin TXR\n"
+
     for modulo in bits_modulo:
         RSA = rsa_key(bits_modulo=modulo)
+        
         now = time()
-        [RSA.sign(message) for message in messages]
+        for message in messages:
+            RSA.sign(message)
         time_signatures = time() - now
 
         now = time()
-        [RSA.sign_slow(message) for message in messages]
-        time_slow_signatures = time() - now
+        for message in messages:
+            RSA.sign_slow(message)
+        slow_time_signatures = time() - now
+
+        output_string += f"{modulo},{time_signatures},{slow_time_signatures}\n"
 
         print(f'''
         module: {modulo}
         fast: {time_signatures}
-        slow: {time_slow_signatures}
+        slow: {slow_time_signatures}
         ''')
+
+    with open("output/tabla_comparativa.csv", "w") as output_file:
+        output_file.write(output_string)

@@ -1,3 +1,4 @@
+import pickle
 from time import time
 from random import randint
 from hashlib import sha256
@@ -114,6 +115,8 @@ if __name__ == "__main__":
     blockChain = block_chain(next(transactions))  # Obtenemos la primera transacción para generar el Block Chain
     for _ in range(99):  # Toma entre 400 a 600 segundos
         blockChain.add_block(next(transactions))  # Obtenemos las próximas transacciones y las agregamos a Block Chain
-    
-    print(f'''Output: {blockChain.verify()}
-    Time elapsed: {time() - now}''')
+
+    with open("output/100blocks.pickle", 'wb') as output_file:
+        pickle.dump(blockChain, output_file)
+
+    print(f"File 'output/100blocks.pickle' has been created!\nVerification: {blockChain.verify()}\nTime elapsed: {time() - now}")
