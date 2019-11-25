@@ -1,16 +1,19 @@
+import sys
+import random
+from time import time
 from rsa import *
 
 
 class block_chain:
 
-    def __init__(self, transaction, i):
+    def __init__(self, transaction):
         '''
         genera una cadena de blocs que es una llista de blocs,
         el primer bloc es un bloc "genesis" generat amb la transaccio "transaction"
         '''
-        first_block = block(i)
-        self.list_of_blocks = [first_block.genesis(transaction)]
-
+        new_block = block()
+        first_block = new_block.genesis(transaction)
+        self.list_of_blocks = [first_block]
 
     def add_block(self, transaction):
         '''
@@ -31,7 +34,6 @@ class block_chain:
         for b in self.list_of_blocks:
             if not b.verify_block():
                 return False
-                # pass
         return True
 
     def __repr__(self):
@@ -40,21 +42,25 @@ class block_chain:
 
 class block:
 
-    def __init__(self, seed):
+    def __init__(self):
         self.block_hash = None
         self.previous_block_hash = None
         self.transaction = None
-        # self.seed = None
-        self.seed = seed
+        self.seed = None
 
     def _generate_block_hash_(self):
-        entrada = str(self.previous_block_hash)
-        entrada += str(self.transaction.public_key.publicExponent)
-        entrada += str(self.transaction.public_key.modulus)
-        entrada += str(self.transaction.message)
-        entrada += str(self.transaction.signature)
-        entrada += str(self.seed)
-        return int(sha256(entrada.encode()).hexdigest(), 16)
+        while True:
+            entrada = str(self.previous_block_hash)
+            entrada += str(self.transaction.public_key.publicExponent)
+            entrada += str(self.transaction.public_key.modulus)
+            entrada += str(self.transaction.message)
+            entrada += str(self.transaction.signature)
+            self.seed = random.randint(0, 2**256)
+            entrada += str(self.seed)
+            entrada = int(sha256(entrada.encode()).hexdigest(), 16)
+            if entrada < 2 ** (256 - D):
+                break
+        return entrada
 
     def genesis(self, transaction):
         '''
@@ -62,8 +68,6 @@ class block:
         - previous_block_hash=0
         - ser válid
         '''
-        # self.seed = 33289
-        self.seed = self.seed
         self.previous_block_hash = 0
         self.transaction = transaction
         self.block_hash = self._generate_block_hash_()
@@ -73,10 +77,9 @@ class block:
         '''
         genera el seguent block valid amb la transaccio "transaction"
         '''
-        new_block = block(self.seed)
-        # new_block.seed = 33289
-        new_block.previous_block_hash = self.block_hash
+        new_block = block()
         new_block.transaction = transaction
+        new_block.previous_block_hash = self.block_hash
         new_block.block_hash = new_block._generate_block_hash_()
         return new_block
 
@@ -89,19 +92,19 @@ class block:
         Si totes les comprovacions son correctes retorna el boolea True.
         En qualsevol altre cas retorma el boolea False
         '''
-        first = self.previous_block_hash < 2 ** 240
-        second = self.block_hash < 2 ** 240
+        first = self.previous_block_hash < 2 ** (256 - D)
+        second = self.block_hash < 2 ** (256 - D)
         third = self.transaction.verify()
-        # print(first, second, third)
         return first and second and third
 
     def __repr__(self):
         return f'''
-            prevHash = {self.previous_block_hash}
-            hash = {self.block_hash}
-            limit = {2 ** 240}
-            transaccion = {self.transaction}
-            seed = {self.seed}
+    seed = {self.seed}
+
+    prevHash = {self.previous_block_hash}
+    hash = {self.block_hash}
+    limit = {2 ** 256-D}
+    transaccion = {self.transaction}
         '''
 
 
@@ -111,9 +114,9 @@ class transaction:
         '''
         message: hasheado
         '''
-        self.public_key = rsa_public_key(RSAkey)
-        self.message = message  # Es un entero que representa el hash del mensaje -> solo hay que implementar m**da mod ma
+        self.message = message
         self.signature = RSAkey.sign(message)
+        self.public_key = rsa_public_key(RSAkey)
 
     def verify(self):
         '''
@@ -124,22 +127,28 @@ class transaction:
         return self.public_key.verify(self.message, self.signature)
 
     def __str__(self):
-        return f'''holi'''
+        return f'''
+        Message: {self.message}
+        Signature: {self.signature}
+        '''
 
 
 if __name__ == "__main__":
+    D = 14  # Para el exponente
     RSA = rsa_key()
-    transaccion = transaction(int(sha256("hola".encode()).hexdigest(), 16), RSA)
-    # transaccion2 = transaction(int(sha256("hola 2".encode()).hexdigest(), 16), RSA)
-    # transaccion3 = transaction(int(sha256("hola 3".encode()).hexdigest(), 16), RSA)
-    # blockChain.add_block(transaccion2)
-    # blockChain.add_block(transaccion3)
-    # print(blockChain)
-    
-    for i in range(100000000000000000):
 
-        blockChain = block_chain(transaccion, i)
-        if blockChain.verify():
-            print(i)
-        
+    transactions = [transaction(int(sha256(f"hola {i}".encode()).hexdigest(), 16), RSA) for i in range(100)]
     
+    now = time()
+    blockChain = block_chain(transactions[0])
+    [blockChain.add_block(transactions[i + 1]) for i in range(99)]
+    
+    print(f'''Time elapsed: {time() - now}
+    Output: {blockChain.verify()}''')
+    
+    # while True:
+    #     try:
+        # except KeyboardInterrupt:
+        #     print(f"Last seed tried: {blockChain.block_id}")
+        #     sys.exit()
+

@@ -1,6 +1,7 @@
 from hashlib import sha256
 from Crypto import Random
 from Crypto.Util import number
+from time import time
 
 
 class rsa_key:
@@ -69,5 +70,35 @@ class rsa_public_key:
 
 
 if __name__ == "__main__":
-    RSA = rsa_key()
-    public_rsa = rsa_public_key(RSA)
+
+    bits_modulo = [512, 1024, 2048, 4096]
+    messages = [int(sha256(f"hola {i}".encode()).hexdigest(), 16) for i in range(100)]
+    
+    for modulo in bits_modulo:
+        RSA = rsa_key(bits_modulo=modulo)
+        now = time()
+        [RSA.sign(message) for message in messages]
+        time_signatures = time() - now
+
+        now = time()
+        [RSA.sign_slow(message) for message in messages]
+        time_slow_signatures = time() - now
+
+        print(f'''
+        module: {modulo}
+        fast: {time_signatures}
+        slow: {time_slow_signatures}
+        ''')
+
+    # public_rsa = rsa_public_key(RSA)
+
+'''
+Tabla de tiempos para firmar/signar
+
+bits modulo |   TXR     |   s/TXR   |
+------------------------------------|
+512         |
+1024        |
+2048        |
+4096        |
+'''
