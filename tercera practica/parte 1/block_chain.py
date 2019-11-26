@@ -12,7 +12,7 @@ from transaction import transaction
 ########################
 
 def generate_block_chain(file_name, limit):
-    print("Generating Block Chain... ETA: 6 - 10 minutes")
+    print("Generating new Block Chain...")
     now = time()
 
     # Genera un iterable (solo puede ser iterado una única vez)
@@ -45,13 +45,27 @@ def generate_block_hash(block):
             break
     block.block_hash = entrada
 
+def generate_wrong_block_hash(block):
+    while True:
+        block.seed = randint(0, 2 ** 256)
+        entrada = str(block.previous_block_hash)
+        entrada += str(block.transaction.public_key.publicExponent)
+        entrada += str(block.transaction.public_key.modulus)
+        entrada += str(block.transaction.message)
+        entrada += str(block.transaction.signature)
+        entrada += str(block.seed)
+        entrada = int(sha256(entrada.encode()).hexdigest(), 16)
+        if entrada > 2 ** (256 - D):
+            break
+    block.block_hash = entrada
+
 def add_wrong_block(blockChain, transaction):
     last_block = blockChain.list_of_blocks[-1]
     new_block = block()
     new_block.transaction = transaction
     new_block.previous_block_hash = last_block.block_hash
-    generate_block_hash(new_block)
-    blockChain.append(new_block)
+    generate_wrong_block_hash(new_block)
+    blockChain.list_of_blocks.append(new_block)
 
 
 ######################
@@ -149,7 +163,7 @@ if __name__ == "__main__":
     print("Generating RSA Key")
     RSA = rsa_key()
 
-    # Only one at the time
+    print("Starting Block Chains creation | ETA: 10 - 15 minutes")
     generate_block_chain("output/100_blocks.pickle", 100)
-    # generate_block_chain("output/100_blocks_Alex.pickle", ALEX_DNI)
-    # generate_block_chain("output/100_blocks_Paul.pickle", PAUL_DNI)
+    generate_block_chain("output/100_blocks_Alex.pickle", ALEX_DNI)
+    generate_block_chain("output/100_blocks_Paul.pickle", PAUL_DNI)
