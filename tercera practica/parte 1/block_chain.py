@@ -104,8 +104,8 @@ class block_chain:
                 return False
         return True
 
-    def __repr__(self):
-        return f'''{self.list_of_blocks}'''
+    # def __repr__(self):
+    #     return f'''{self.list_of_blocks}'''
 
 
 class block:
@@ -151,8 +151,8 @@ class block:
         third = self.transaction.verify()
         return first and second and third
 
-    def __repr__(self):
-        return f"seed = {self.seed}\nprevHash = {self.previous_block_hash}\nhash = {self.block_hash}\nlimit = {2 ** 256 - D}\ntransaccion = {self.transaction}\n"
+    # def __repr__(self):
+    #     return f"seed = {self.seed}\nprevHash = {self.previous_block_hash}\nhash = {self.block_hash}\nlimit = {2 ** 256 - D}\ntransaccion = {self.transaction}\n"
 
 
 if __name__ == "__main__":
