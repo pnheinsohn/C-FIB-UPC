@@ -1,0 +1,50 @@
+# Parte 1: Wikipedia
+
+# a) El nombre de las curvas es secp256r1
+# b) El número de puntos es 115792089210356248762697446949407573530086143415290314195533631308867097853951
+# Verificación de primalidad:
+p = 2^(224) * (2^(32) - 1) + 2^(192) + 2^(96) - 1
+F_p = GF(p)
+orden = F_p.order()
+orden in Primes()
+
+# Escribir los rangos Hasse
+
+#Output = True
+
+# Entrega 'True' por lo que la primalidad es real
+
+# c) Datos para calcular el punto
+a = 0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC
+b = 0x5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B
+
+x = 0x23551f0b79e4822143c07d2b3f4570a67ed537197fe77ff14acdb3d220021724
+y = 0x19b80ac6d1582b114cfafa89bab7ab1b8acaaeacbad7e3588fc94aa406279e9c
+
+generador = (0x6B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C296,
+             0x4FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5)
+
+(Mod(y^2, p) == Mod(x^3 + a * x + b, p))
+Mod(generador[1]^2, p) == Mod(generador[0]^3 + a * generador[0] + b, p)
+
+#Output1 = True
+#Output2 = True
+
+# Como ambos resultados retorna 'true' tenemos que el punto pertenece a la curva
+
+# d) Obtención del orden punto p
+orden = F_p.order()
+orden
+# Dado que los factores del orden dividen a p, y se tiene que el orden es primo, entonces
+# el orden de p necesariamente es el mismo orden n.
+
+# Output = 115792089210356248762697446949407573530086143415290314195533631308867097853951
+
+# Parte 2: Google
+
+# a) El nombre de las curvas es x25519
+# b) El número de puntos es 2²⁵² + 27742317777372353535851937790883648493
+# Verificación de primalidad:
+2^(252) + 27742317777372353535851937790883648493 in Primes()
+
+#Output = True
